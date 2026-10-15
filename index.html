@@ -1,0 +1,4445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>HabitFlow — Habit Tracker</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #070914;
+            --bg2: #0d1020;
+            --card: rgba(18, 22, 42, .78);
+            --border: rgba(255, 255, 255, .09);
+            --border-light: rgba(255, 255, 255, .15);
+            --text: #f7f8ff;
+            --muted: #9298b3;
+            --purple: #8b5cf6;
+            --blue: #4f8cff;
+            --cyan: #22d3ee;
+            --green: #34d399;
+            --yellow: #fbbf24;
+            --red: #fb7185;
+            --shadow: 0 25px 70px rgba(0,0,0,.35);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            color: var(--text);
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(139,92,246,.20),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 15%,
+                    rgba(34,211,238,.15),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(79,140,255,.14),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    135deg,
+                    #060711 0%,
+                    #0a0d1b 45%,
+                    #090b17 100%
+                );
+
+            background-attachment: fixed;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .035;
+
+            background-image:
+                radial-gradient(
+                    rgba(255,255,255,.7) 1px,
+                    transparent 1px
+                );
+
+            background-size: 24px 24px;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        input {
+            outline: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================
+           LOGIN / AUTH
+        ========================= */
+
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1080px;
+
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 20px;
+        }
+
+        .login-hero {
+            min-height: 590px;
+
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 50px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            position: relative;
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(139,92,246,.18),
+                    rgba(34,211,238,.06)
+                ),
+                rgba(12,15,30,.85);
+
+            box-shadow: var(--shadow);
+        }
+
+        .login-hero::before {
+            content: "";
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            background: rgba(139,92,246,.18);
+            filter: blur(70px);
+            top: -150px;
+            right: -100px;
+        }
+
+        .login-hero::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: rgba(34,211,238,.12);
+            filter: blur(70px);
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 15px;
+
+            font-size: 25px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--blue)
+                );
+
+            box-shadow:
+                0 12px 30px rgba(139,92,246,.3);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+        }
+
+        .eyebrow {
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            position: relative;
+            z-index: 1;
+
+            font-size: clamp(42px, 5vw, 70px);
+            line-height: 1.02;
+            letter-spacing: -3px;
+
+            margin-bottom: 22px;
+        }
+
+        .gradient-text {
+            background:
+                linear-gradient(
+                    90deg,
+                    #a78bfa,
+                    #60a5fa,
+                    #22d3ee
+                );
+
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-description {
+            position: relative;
+            z-index: 1;
+
+            max-width: 580px;
+
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.8;
+
+            margin-bottom: 28px;
+        }
+
+        .hero-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-pill {
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            border-radius: 999px;
+            font-size: 12px;
+            color: #cbd0e5;
+        }
+
+        .login-card {
+            min-height: 590px;
+
+            border: 1px solid var(--border);
+            border-radius: 32px;
+            padding: 42px;
+
+            background:
+                rgba(12,15,30,.9);
+
+            box-shadow: var(--shadow);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-card h2 {
+            font-size: 32px;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .login-card > p {
+            color: var(--muted);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            margin-bottom: 17px;
+        }
+
+        .field-label {
+            display: block;
+            color: #cfd3e7;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .auth-input {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            background: rgba(255,255,255,.045);
+
+            color: white;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        .password-wrap .auth-input {
+            padding-right: 52px;
+        }
+
+        .auth-input::placeholder {
+            color: #666d87;
+        }
+
+        .auth-input:focus {
+            border-color: rgba(139,92,246,.7);
+
+            box-shadow:
+                0 0 0 4px rgba(139,92,246,.1);
+        }
+
+        .show-password {
+            position: absolute;
+
+            right: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            border: 0;
+            background: transparent;
+
+            color: #969db8;
+
+            font-size: 17px;
+
+            padding: 5px;
+        }
+
+        .primary-btn {
+            width: 100%;
+
+            border: 0;
+            border-radius: 14px;
+
+            padding: 15px;
+
+            color: white;
+
+            font-weight: 800;
+            font-size: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--blue)
+                );
+
+            box-shadow:
+                0 12px 28px rgba(79,140,255,.2);
+
+            transition: .2s;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
+        }
+
+        .secondary-btn {
+            width: 100%;
+
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+
+            padding: 13px;
+
+            color: #d9dded;
+
+            background: rgba(255,255,255,.04);
+
+            font-weight: 700;
+
+            transition: .2s;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255,255,255,.07);
+        }
+
+        .auth-switch {
+            margin-top: 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .auth-link {
+            color: #a78bfa;
+            font-weight: 800;
+            border: 0;
+            background: transparent;
+            margin-left: 5px;
+        }
+
+        .auth-message {
+            min-height: 22px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #fda4af;
+        }
+
+        .verification-card {
+            display: none;
+        }
+
+        .verification-info {
+            padding: 13px;
+            border-radius: 12px;
+            background: rgba(34,211,238,.06);
+            border: 1px solid rgba(34,211,238,.13);
+            color: #b9eefa;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .code-input {
+            text-align: center;
+            letter-spacing: 8px;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .verification-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* =========================
+           DASHBOARD
+        ========================= */
+
+        #dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .app {
+            width: min(1250px, calc(100% - 32px));
+            margin: auto;
+            padding: 24px 0 60px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 14px 17px;
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            background: rgba(10,13,28,.78);
+
+            backdrop-filter: blur(20px);
+
+            margin-bottom: 18px;
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mini-logo {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--blue)
+                );
+        }
+
+        .topbar-brand strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .topbar-brand span {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        .logout-btn {
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            color: #dfe3f1;
+            padding: 9px 13px;
+            border-radius: 11px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .dashboard-hero {
+            border: 1px solid var(--border);
+            border-radius: 25px;
+
+            padding: 35px;
+
+            margin-bottom: 18px;
+
+            position: relative;
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,.14),
+                    rgba(34,211,238,.045)
+                ),
+                rgba(12,15,30,.78);
+        }
+
+        .dashboard-hero::after {
+            content: "";
+            position: absolute;
+
+            width: 300px;
+            height: 300px;
+
+            border-radius: 50%;
+
+            background: rgba(79,140,255,.12);
+
+            filter: blur(80px);
+
+            right: -120px;
+            top: -120px;
+        }
+
+        .dashboard-hero h1 {
+            position: relative;
+            z-index: 1;
+
+            font-size: clamp(32px, 5vw, 58px);
+            line-height: 1.05;
+            letter-spacing: -2px;
+
+            margin-bottom: 13px;
+        }
+
+        .dashboard-hero p {
+            position: relative;
+            z-index: 1;
+
+            color: var(--muted);
+            max-width: 650px;
+            line-height: 1.7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 13px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 19px;
+
+            background: var(--card);
+
+            box-shadow:
+                0 15px 40px rgba(0,0,0,.14);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin-bottom: 9px;
+        }
+
+        .stat-value {
+            font-size: 29px;
+            font-weight: 850;
+            letter-spacing: -1px;
+        }
+
+        .stat-small {
+            color: #6f7691;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .section {
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px;
+            background: var(--card);
+            margin-bottom: 18px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 850;
+        }
+
+        .section-subtitle {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .add-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .habit-input {
+            flex: 1;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            padding: 13px 14px;
+
+            color: white;
+            background: rgba(255,255,255,.045);
+        }
+
+        .habit-input:focus {
+            border-color: rgba(139,92,246,.7);
+        }
+
+        .add-btn {
+            border: 0;
+            border-radius: 12px;
+
+            padding: 0 19px;
+
+            color: white;
+            font-weight: 800;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--blue)
+                );
+        }
+
+        .overall-progress {
+            margin-bottom: 18px;
+        }
+
+        .progress-head {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 9px;
+
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .progress-track {
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.06);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--purple),
+                    var(--cyan)
+                );
+
+            transition: width .35s ease;
+        }
+
+        .habits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 13px;
+        }
+
+        .habit-card {
+            border: 1px solid var(--border);
+            border-radius: 18px;
+
+            padding: 18px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.045),
+                    rgba(255,255,255,.018)
+                );
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .habit-card::before {
+            content: "";
+            position: absolute;
+            width: 5px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            background:
+                linear-gradient(
+                    var(--purple),
+                    var(--cyan)
+                );
+        }
+
+        .habit-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .habit-name {
+            font-size: 17px;
+            font-weight: 800;
+            word-break: break-word;
+        }
+
+        .habit-status {
+            margin-top: 5px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .habit-actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .habit-action {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            padding: 8px 10px;
+
+            color: #dfe3f2;
+            background: rgba(255,255,255,.04);
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .habit-action.complete {
+            background: rgba(52,211,153,.09);
+            border-color: rgba(52,211,153,.22);
+            color: #86efac;
+        }
+
+        .habit-action.delete {
+            color: #fda4af;
+        }
+
+        .habit-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .metric {
+            padding: 11px;
+
+            border-radius: 12px;
+
+            background: rgba(255,255,255,.035);
+
+            border: 1px solid rgba(255,255,255,.045);
+        }
+
+        .metric-label {
+            color: #777e98;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            font-weight: 800;
+        }
+
+        .metric-value {
+            margin-top: 5px;
+            font-size: 17px;
+            font-weight: 850;
+        }
+
+        .empty-state {
+            padding: 45px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        /* =========================
+           ANALYTICS
+        ========================= */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .analytics-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 17px;
+            background: rgba(255,255,255,.025);
+        }
+
+        .analytics-card-label {
+            color: var(--muted);
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .analytics-card-value {
+            font-size: 27px;
+            font-weight: 850;
+        }
+
+        .chart {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 9px;
+            align-items: end;
+            height: 180px;
+            padding-top: 15px;
+        }
+
+        .chart-column {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .chart-value {
+            font-size: 9px;
+            color: #8f96af;
+        }
+
+        .chart-bar-wrap {
+            width: 100%;
+            height: 125px;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .chart-bar {
+            width: min(38px, 70%);
+            min-height: 4px;
+
+            border-radius: 8px 8px 3px 3px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    var(--cyan),
+                    var(--purple)
+                );
+
+            box-shadow:
+                0 5px 20px rgba(139,92,246,.15);
+
+            transition: height .4s ease;
+        }
+
+        .chart-label {
+            color: #777e98;
+            font-size: 9px;
+        }
+
+        /* =========================
+           CALENDAR
+        ========================= */
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calendar-btn {
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,.04);
+            color: #dfe3f2;
+            border-radius: 9px;
+            padding: 7px 10px;
+        }
+
+        .calendar-month {
+            min-width: 130px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .calendar-weekdays,
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .calendar-weekdays {
+            margin-bottom: 6px;
+        }
+
+        .weekday {
+            text-align: center;
+            color: #666d86;
+            font-size: 9px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .calendar-day {
+            min-height: 58px;
+
+            border: 1px solid rgba(255,255,255,.045);
+            border-radius: 10px;
+
+            padding: 7px;
+
+            background: rgba(255,255,255,.025);
+
+            font-size: 10px;
+            color: #9da4bc;
+
+            position: relative;
+        }
+
+        .calendar-day.other {
+            opacity: .25;
+        }
+
+        .calendar-day.today {
+            border-color: rgba(34,211,238,.55);
+        }
+
+        .calendar-day.completed {
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(52,211,153,.18),
+                    rgba(34,211,238,.06)
+                );
+
+            color: #a7f3d0;
+        }
+
+        .calendar-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+
+            position: absolute;
+            right: 7px;
+            bottom: 7px;
+
+            background: var(--green);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .login-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .login-hero {
+                min-height: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .habits-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            #loginScreen {
+                padding: 12px;
+            }
+
+            .login-hero,
+            .login-card {
+                padding: 27px;
+                border-radius: 24px;
+            }
+
+            .login-hero {
+                min-height: auto;
+            }
+
+            .hero-title {
+                font-size: 42px;
+                letter-spacing: -2px;
+            }
+
+            .app {
+                width: min(100% - 20px, 1250px);
+                padding-top: 10px;
+            }
+
+            .dashboard-hero {
+                padding: 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .add-row {
+                flex-direction: column;
+            }
+
+            .add-btn {
+                padding: 13px;
+            }
+
+            .section {
+                padding: 16px;
+            }
+
+            .habit-top {
+                flex-direction: column;
+            }
+
+            .habit-actions {
+                width: 100%;
+            }
+
+            .habit-action {
+                flex: 1;
+            }
+
+            .verification-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .history-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .calendar-day {
+                min-height: 43px;
+                padding: 5px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     AUTH
+========================================================= -->
+
+<div id="loginScreen">
+
+    <div class="login-wrapper">
+
+
+        <div class="login-hero">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🔥
+                </div>
+
+                <div class="brand-name">
+                    HabitFlow
+                </div>
+
+            </div>
+
+
+            <div class="eyebrow">
+                Your daily growth system
+            </div>
+
+
+            <h1 class="hero-title">
+                Small habits.
+                <br>
+                <span class="gradient-text">
+                    Big changes.
+                </span>
+            </h1>
+
+
+            <p class="hero-description">
+
+                Build consistency, track your progress,
+                understand your habits and turn your
+                daily actions into long-term results.
+
+            </p>
+
+
+            <div class="hero-pills">
+
+                <div class="hero-pill">
+                    🔥 Streaks
+                </div>
+
+                <div class="hero-pill">
+                    📊 Analytics
+                </div>
+
+                <div class="hero-pill">
+                    📅 History
+                </div>
+
+                <div class="hero-pill">
+                    🎯 Progress
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LOGIN CARD -->
+
+        <div
+            class="login-card"
+            id="loginCard"
+        >
+
+            <h2>
+                Welcome back
+            </h2>
+
+            <p>
+                Continue building your best self.
+            </p>
+
+
+            <div class="input-group">
+
+                <label class="field-label">
+                    Email
+                </label>
+
+                <input
+                    class="auth-input"
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    autocomplete="username"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label class="field-label">
+                    Password
+                </label>
+
+                <div class="password-wrap">
+
+                    <input
+                        class="auth-input"
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('password', this)"
+                        title="Show password"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="login()"
+            >
+                Enter HabitFlow →
+            </button>
+
+
+            <div
+                class="auth-message"
+                id="loginMessage"
+            ></div>
+
+
+            <div class="auth-switch">
+
+                Don't have an account?
+
+                <button
+                    class="auth-link"
+                    onclick="showSignup()"
+                >
+                    Create one
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SIGNUP CARD -->
+
+        <div
+            class="login-card hidden"
+            id="signupCard"
+        >
+
+            <h2>
+                Create account
+            </h2>
+
+            <p>
+                Start building your habits today.
+            </p>
+
+
+            <div class="input-group">
+
+                <label class="field-label">
+                    Email
+                </label>
+
+                <input
+                    class="auth-input"
+                    type="email"
+                    id="signupEmail"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                >
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label class="field-label">
+                    Password
+                </label>
+
+                <div class="password-wrap">
+
+                    <input
+                        class="auth-input"
+                        type="password"
+                        id="signupPassword"
+                        placeholder="Create a password"
+                        autocomplete="new-password"
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('signupPassword', this)"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label class="field-label">
+                    Confirm password
+                </label>
+
+                <div class="password-wrap">
+
+                    <input
+                        class="auth-input"
+                        type="password"
+                        id="signupConfirmPassword"
+                        placeholder="Repeat your password"
+                        autocomplete="new-password"
+                    >
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('signupConfirmPassword', this)"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="signup()"
+            >
+                Create Account →
+            </button>
+
+
+            <div
+                class="auth-message"
+                id="signupMessage"
+            ></div>
+
+
+            <div class="auth-switch">
+
+                Already have an account?
+
+                <button
+                    class="auth-link"
+                    onclick="showLogin()"
+                >
+                    Log in
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- VERIFICATION CARD -->
+
+        <div
+            class="login-card hidden"
+            id="verificationCard"
+        >
+
+            <h2>
+                Verify your email
+            </h2>
+
+            <p>
+                One more step before you enter HabitFlow.
+            </p>
+
+
+            <div class="verification-info">
+
+                📩 We sent a verification code to:
+
+                <strong id="verificationEmailText">
+                    your email
+                </strong>
+
+                <br><br>
+
+                Enter the code below to activate
+                your HabitFlow account.
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label class="field-label">
+                    Verification code
+                </label>
+
+                <input
+                    class="auth-input code-input"
+                    type="text"
+                    id="verificationCode"
+                    placeholder="123456"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="20"
+                >
+
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="confirmSignup()"
+            >
+                Verify Account ✓
+            </button>
+
+
+            <div
+                class="auth-message"
+                id="verificationMessage"
+            ></div>
+
+
+            <div class="verification-actions">
+
+                <button
+                    class="secondary-btn"
+                    onclick="resendVerificationCode()"
+                >
+                    Resend Code
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    onclick="showSignup()"
+                >
+                    Back to Sign Up
+                </button>
+
+            </div>
+
+
+            <div class="auth-switch">
+
+                Already verified?
+
+                <button
+                    class="auth-link"
+                    onclick="showLogin()"
+                >
+                    Log in
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     DASHBOARD
+========================================================= -->
+
+<div id="dashboard">
+
+    <div class="app">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div class="topbar-brand">
+
+                <div class="mini-logo">
+                    🔥
+                </div>
+
+                <div>
+
+                    <strong>
+                        HabitFlow
+                    </strong>
+
+                    <span>
+                        Personal growth dashboard
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Log out
+            </button>
+
+        </div>
+
+
+
+        <!-- HERO -->
+
+        <div class="dashboard-hero">
+
+            <div class="eyebrow">
+                Daily dashboard
+            </div>
+
+            <h1>
+
+                Build your
+                <span class="gradient-text">
+                    momentum.
+                </span>
+
+            </h1>
+
+            <p>
+
+                Every completed habit is a vote for
+                the person you want to become.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- STATS -->
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total habits
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalHabits"
+                >
+                    0
+                </div>
+
+                <div class="stat-small">
+                    Habits you're tracking
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Completed today
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="completedToday"
+                >
+                    0
+                </div>
+
+                <div class="stat-small">
+                    Today's progress
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Current streak
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="currentStreak"
+                >
+                    0 🔥
+                </div>
+
+                <div class="stat-small">
+                    Best active momentum
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Completion rate
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="completionRate"
+                >
+                    0%
+                </div>
+
+                <div class="stat-small">
+                    Overall progress
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ADD HABIT -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-title">
+                        Add a habit
+                    </div>
+
+                    <div class="section-subtitle">
+                        Keep it simple and consistent.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="add-row">
+
+                <input
+                    class="habit-input"
+                    type="text"
+                    id="habitName"
+                    placeholder="e.g. Read 20 minutes"
+                >
+
+                <button
+                    class="add-btn"
+                    onclick="addHabit()"
+                >
+                    + Add Habit
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- OVERALL PROGRESS -->
+
+        <div class="section overall-progress">
+
+            <div class="progress-head">
+
+                <span>
+                    Today's overall progress
+                </span>
+
+                <strong id="progressText">
+                    0%
+                </strong>
+
+            </div>
+
+            <div class="progress-track">
+
+                <div
+                    class="progress-fill"
+                    id="progressFill"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- HABITS -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-title">
+                        Your habits
+                    </div>
+
+                    <div class="section-subtitle">
+                        Complete them daily to build your streak.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="habits-grid"
+                id="habitsContainer"
+            ></div>
+
+        </div>
+
+
+
+        <!-- ANALYTICS -->
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-title">
+                        Habit Analytics
+                    </div>
+
+                    <div class="section-subtitle">
+                        Understand your consistency over time.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="analytics-grid">
+
+                <div class="analytics-card">
+
+                    <div class="analytics-card-label">
+                        Last 7 days
+                    </div>
+
+                    <div
+                        class="analytics-card-value"
+                        id="weeklyRate"
+                    >
+                        0%
+                    </div>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <div class="analytics-card-label">
+                        This month
+                    </div>
+
+                    <div
+                        class="analytics-card-value"
+                        id="monthlyRate"
+                    >
+                        0%
+                    </div>
+
+                </div>
+
+
+                <div class="analytics-card">
+
+                    <div class="analytics-card-label">
+                        Longest streak
+                    </div>
+
+                    <div
+                        class="analytics-card-value"
+                        id="longestStreak"
+                    >
+                        0 🔥
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="chart"
+                id="weeklyChart"
+            ></div>
+
+        </div>
+
+
+
+        <!-- HISTORY -->
+
+        <div class="section">
+
+            <div class="history-header">
+
+                <div>
+
+                    <div class="section-title">
+                        Habit History 📅
+                    </div>
+
+                    <div class="section-subtitle">
+                        Green days show completed habits.
+                    </div>
+
+                </div>
+
+
+                <div class="calendar-controls">
+
+                    <button
+                        class="calendar-btn"
+                        onclick="changeCalendarMonth(-1)"
+                    >
+                        ←
+                    </button>
+
+                    <div
+                        class="calendar-month"
+                        id="calendarMonth"
+                    >
+                        Month
+                    </div>
+
+                    <button
+                        class="calendar-btn"
+                        onclick="changeCalendarMonth(1)"
+                    >
+                        →
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="calendar-weekdays"
+            >
+
+                <div class="weekday">
+                    Sun
+                </div>
+
+                <div class="weekday">
+                    Mon
+                </div>
+
+                <div class="weekday">
+                    Tue
+                </div>
+
+                <div class="weekday">
+                    Wed
+                </div>
+
+                <div class="weekday">
+                    Thu
+                </div>
+
+                <div class="weekday">
+                    Fri
+                </div>
+
+                <div class="weekday">
+                    Sat
+                </div>
+
+            </div>
+
+
+            <div
+                class="calendar-grid"
+                id="calendarGrid"
+            ></div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const API_URL =
+    "https://pc8ttz3zxf.execute-api.ap-south-1.amazonaws.com/prod/habits";
+
+const AUTH_URL =
+    "https://pc8ttz3zxf.execute-api.ap-south-1.amazonaws.com/prod/auth";
+
+const COGNITO_CLIENT_ID =
+    "3qpvagall3t67077cr9lm8vf6l";
+
+const COGNITO_URL =
+    "https://cognito-idp.ap-south-1.amazonaws.com/";
+
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let habits = [];
+
+let calendarDate =
+    new Date();
+
+let verificationEmail =
+    "";
+
+
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
+function getToken() {
+
+    return sessionStorage.getItem(
+        "accessToken"
+    );
+
+}
+
+
+function getToday() {
+
+    const now =
+        new Date();
+
+    return [
+        now.getUTCFullYear(),
+        String(
+            now.getUTCMonth() + 1
+        ).padStart(2, "0"),
+        String(
+            now.getUTCDate()
+        ).padStart(2, "0")
+    ].join("-");
+
+}
+
+
+function formatDate(date) {
+
+    return [
+        date.getUTCFullYear(),
+        String(
+            date.getUTCMonth() + 1
+        ).padStart(2, "0"),
+        String(
+            date.getUTCDate()
+        ).padStart(2, "0")
+    ].join("-");
+
+}
+
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function getCompletionDates(habit) {
+
+    return Array.isArray(
+        habit.completionDates
+    )
+        ? habit.completionDates
+        : [];
+
+}
+
+
+function togglePassword(
+    inputId,
+    button
+) {
+
+    const input =
+        document.getElementById(
+            inputId
+        );
+
+    if (!input) {
+        return;
+    }
+
+    if (
+        input.type ===
+        "password"
+    ) {
+
+        input.type =
+            "text";
+
+        button.textContent =
+            "🙈";
+
+        button.title =
+            "Hide password";
+
+    } else {
+
+        input.type =
+            "password";
+
+        button.textContent =
+            "👁";
+
+        button.title =
+            "Show password";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   AUTH SCREEN NAVIGATION
+========================================================= */
+
+function hideAuthCards() {
+
+    document.getElementById(
+        "loginCard"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "signupCard"
+    ).classList.add("hidden");
+
+    document.getElementById(
+        "verificationCard"
+    ).classList.add("hidden");
+
+}
+
+
+function showLogin() {
+
+    hideAuthCards();
+
+    document.getElementById(
+        "loginCard"
+    ).classList.remove("hidden");
+
+    document.getElementById(
+        "loginMessage"
+    ).textContent = "";
+
+}
+
+
+function showSignup() {
+
+    hideAuthCards();
+
+    document.getElementById(
+        "signupCard"
+    ).classList.remove("hidden");
+
+    document.getElementById(
+        "signupMessage"
+    ).textContent = "";
+
+}
+
+
+function showVerification(email) {
+
+    verificationEmail =
+        email;
+
+    document.getElementById(
+        "verificationEmailText"
+    ).textContent =
+        email;
+
+    hideAuthCards();
+
+    document.getElementById(
+        "verificationCard"
+    ).classList.remove("hidden");
+
+    document.getElementById(
+        "verificationCode"
+    ).focus();
+
+}
+
+
+
+/* =========================================================
+   COGNITO API HELPER
+========================================================= */
+
+async function cognitoRequest(
+    target,
+    body
+) {
+
+    const response =
+        await fetch(
+            COGNITO_URL,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/x-amz-json-1.1",
+
+                    "X-Amz-Target":
+                        "AWSCognitoIdentityProviderService." +
+                        target
+                },
+
+                body:
+                    JSON.stringify(body)
+            }
+        );
+
+    const data =
+        await response.json();
+
+    if (!response.ok) {
+
+        const error =
+            new Error(
+                data.message ||
+                data.Message ||
+                "Cognito request failed."
+            );
+
+        error.name =
+            data.__type
+                ? data.__type.split("#").pop()
+                : "";
+
+        throw error;
+
+    }
+
+    return data;
+
+}
+
+
+
+/* =========================================================
+   SIGN UP
+========================================================= */
+
+async function signup() {
+
+    const email =
+        document.getElementById(
+            "signupEmail"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "signupPassword"
+        ).value;
+
+    const confirmPassword =
+        document.getElementById(
+            "signupConfirmPassword"
+        ).value;
+
+    const message =
+        document.getElementById(
+            "signupMessage"
+        );
+
+    message.textContent =
+        "";
+
+
+    if (
+        !email ||
+        !password ||
+        !confirmPassword
+    ) {
+
+        message.textContent =
+            "Please fill in all fields.";
+
+        return;
+
+    }
+
+
+    if (
+        password !==
+        confirmPassword
+    ) {
+
+        message.textContent =
+            "Passwords do not match.";
+
+        return;
+
+    }
+
+
+    if (password.length < 8) {
+
+        message.textContent =
+            "Password must be at least 8 characters.";
+
+        return;
+
+    }
+
+
+    try {
+
+        const data =
+            await cognitoRequest(
+                "SignUp",
+                {
+                    ClientId:
+                        COGNITO_CLIENT_ID,
+
+                    Username:
+                        email,
+
+                    Password:
+                        password,
+
+                    UserAttributes: [
+                        {
+                            Name: "email",
+                            Value: email
+                        }
+                    ]
+                }
+            );
+
+
+        /*
+         * If Cognito says the user is already
+         * confirmed, send them to login.
+         */
+
+        if (
+            data.UserConfirmed === true
+        ) {
+
+            message.textContent =
+                "Account created successfully. You can now log in.";
+
+            document.getElementById(
+                "email"
+            ).value =
+                email;
+
+            document.getElementById(
+                "password"
+            ).value =
+                "";
+
+            setTimeout(
+                () => {
+                    showLogin();
+                },
+                700
+            );
+
+            return;
+
+        }
+
+
+        /*
+         * Normal case:
+         * Cognito sends a verification code.
+         */
+
+        showVerification(
+            email
+        );
+
+
+        document.getElementById(
+            "verificationMessage"
+        ).textContent =
+            "Verification code sent. Check your email.";
+
+
+    } catch (error) {
+
+        console.error(
+            "Signup error:",
+            error
+        );
+
+
+        /*
+         * If the email already exists but
+         * the account is still UNCONFIRMED,
+         * allow the user to continue to
+         * the verification screen.
+         */
+
+        if (
+            error.name ===
+                "UsernameExistsException"
+        ) {
+
+            showVerification(
+                email
+            );
+
+            document.getElementById(
+                "verificationMessage"
+            ).textContent =
+                "This account already exists. Enter the verification code or resend a new one.";
+
+            return;
+
+        }
+
+
+        message.textContent =
+            error.message ||
+            "Account creation failed.";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   CONFIRM SIGN UP
+========================================================= */
+
+async function confirmSignup() {
+
+    const code =
+        document.getElementById(
+            "verificationCode"
+        ).value.trim();
+
+    const message =
+        document.getElementById(
+            "verificationMessage"
+        );
+
+    message.textContent =
+        "";
+
+
+    if (!verificationEmail) {
+
+        message.textContent =
+            "Email address is missing. Please sign up again.";
+
+        return;
+
+    }
+
+
+    if (!code) {
+
+        message.textContent =
+            "Please enter the verification code.";
+
+        return;
+
+    }
+
+
+    try {
+
+        await cognitoRequest(
+            "ConfirmSignUp",
+            {
+                ClientId:
+                    COGNITO_CLIENT_ID,
+
+                Username:
+                    verificationEmail,
+
+                ConfirmationCode:
+                    code
+            }
+        );
+
+
+        /*
+         * Cognito has now confirmed the account.
+         */
+
+        document.getElementById(
+            "verificationCode"
+        ).value =
+            "";
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            verificationEmail;
+
+
+        document.getElementById(
+            "password"
+        ).value =
+            "";
+
+
+        showLogin();
+
+
+        document.getElementById(
+            "loginMessage"
+        ).style.color =
+            "#86efac";
+
+        document.getElementById(
+            "loginMessage"
+        ).textContent =
+            "Email verified successfully! You can now log in.";
+
+        setTimeout(
+            () => {
+
+                document.getElementById(
+                    "loginMessage"
+                ).style.color =
+                    "";
+
+            },
+            4000
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Verification error:",
+            error
+        );
+
+        message.textContent =
+            error.message ||
+            "Invalid verification code.";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   RESEND VERIFICATION CODE
+========================================================= */
+
+async function resendVerificationCode() {
+
+    const message =
+        document.getElementById(
+            "verificationMessage"
+        );
+
+    message.textContent =
+        "Sending a new code...";
+
+
+    if (!verificationEmail) {
+
+        message.textContent =
+            "Email address is missing.";
+
+        return;
+
+    }
+
+
+    try {
+
+        await cognitoRequest(
+            "ResendConfirmationCode",
+            {
+                ClientId:
+                    COGNITO_CLIENT_ID,
+
+                Username:
+                    verificationEmail
+            }
+        );
+
+
+        message.style.color =
+            "#86efac";
+
+        message.textContent =
+            "A new verification code has been sent to your email.";
+
+
+        setTimeout(
+            () => {
+
+                message.style.color =
+                    "";
+
+            },
+            4000
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Resend code error:",
+            error
+        );
+
+        message.style.color =
+            "";
+
+        message.textContent =
+            error.message ||
+            "Unable to resend the verification code.";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login() {
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+    const message =
+        document.getElementById(
+            "loginMessage"
+        );
+
+    message.textContent =
+        "";
+
+
+    if (
+        !email ||
+        !password
+    ) {
+
+        message.textContent =
+            "Please enter your email and password.";
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                AUTH_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            email,
+                            password
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Login failed."
+            );
+
+        }
+
+
+        if (!data.accessToken) {
+
+            throw new Error(
+                "No access token received."
+            );
+
+        }
+
+
+        sessionStorage.setItem(
+            "accessToken",
+            data.accessToken
+        );
+
+
+        showDashboard();
+
+        await loadHabits();
+
+
+    } catch (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+
+        /*
+         * If the account exists but hasn't
+         * been confirmed, guide the user
+         * back to verification.
+         */
+
+        const text =
+            (
+                error.message ||
+                ""
+            ).toLowerCase();
+
+
+        if (
+            text.includes(
+                "not confirmed"
+            ) ||
+            text.includes(
+                "unconfirmed"
+            )
+        ) {
+
+            showVerification(
+                email
+            );
+
+            document.getElementById(
+                "verificationMessage"
+            ).textContent =
+                "Your account is not verified yet. Enter your code or resend it.";
+
+            return;
+
+        }
+
+
+        message.textContent =
+            error.message ||
+            "Login failed.";
+
+    }
+
+}
+
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+    sessionStorage.removeItem(
+        "accessToken"
+    );
+
+    habits = [];
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "password"
+    ).value =
+        "";
+
+    showLogin();
+
+}
+
+
+
+/* =========================================================
+   SHOW DASHBOARD
+========================================================= */
+
+function showDashboard() {
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "dashboard"
+    ).style.display =
+        "block";
+
+}
+
+
+
+/* =========================================================
+   LOAD HABITS
+========================================================= */
+
+async function loadHabits() {
+
+    const token =
+        getToken();
+
+
+    if (!token) {
+
+        logout();
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        if (
+            response.status ===
+            401
+        ) {
+
+            logout();
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Failed to load habits."
+            );
+
+        }
+
+
+        habits =
+            Array.isArray(data)
+                ? data
+                : data.habits || [];
+
+
+        displayHabits();
+
+        updateDashboardStats();
+
+        createCalendar();
+
+    } catch (error) {
+
+        console.error(
+            "Load habits error:",
+            error
+        );
+
+
+        document.getElementById(
+            "habitsContainer"
+        ).innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ⚠️
+                </div>
+
+                <h2>
+                    Something went wrong
+                </h2>
+
+                <p>
+                    ${escapeHTML(
+                        error.message ||
+                        "Unable to load habits."
+                    )}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   ADD HABIT
+========================================================= */
+
+async function addHabit() {
+
+    const input =
+        document.getElementById(
+            "habitName"
+        );
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        input.focus();
+
+        return;
+
+    }
+
+
+    const token =
+        getToken();
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body:
+                        JSON.stringify({
+                            name
+                        })
+                }
+            );
+
+
+        if (
+            response.status ===
+            401
+        ) {
+
+            logout();
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Failed to add habit."
+            );
+
+        }
+
+
+        input.value =
+            "";
+
+        await loadHabits();
+
+
+    } catch (error) {
+
+        console.error(
+            "Add habit error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Failed to add habit."
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   UPDATE HABIT
+========================================================= */
+
+async function updateHabit(
+    id,
+    status
+) {
+
+    const token =
+        getToken();
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body:
+                        JSON.stringify({
+                            id,
+                            status
+                        })
+                }
+            );
+
+
+        if (
+            response.status ===
+            401
+        ) {
+
+            logout();
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Failed to update habit."
+            );
+
+        }
+
+
+        await loadHabits();
+
+
+    } catch (error) {
+
+        console.error(
+            "Update habit error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Failed to update habit."
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   DELETE HABIT
+========================================================= */
+
+async function deleteHabit(id) {
+
+    const habit =
+        habits.find(
+            h => h.id === id
+        );
+
+
+    const confirmed =
+        confirm(
+            `Delete "${habit ? habit.name : "this habit"}"?`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const token =
+        getToken();
+
+
+    try {
+
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body:
+                        JSON.stringify({
+                            id
+                        })
+                }
+            );
+
+
+        if (
+            response.status ===
+            401
+        ) {
+
+            logout();
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Failed to delete habit."
+            );
+
+        }
+
+
+        await loadHabits();
+
+
+    } catch (error) {
+
+        console.error(
+            "Delete habit error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Failed to delete habit."
+        );
+
+    }
+
+}
+
+
+
+/* =========================================================
+   STREAKS
+========================================================= */
+
+function calculateCurrentStreak(
+    dates
+) {
+
+    if (!dates.length) {
+        return 0;
+    }
+
+
+    const set =
+        new Set(dates);
+
+
+    let cursor =
+        new Date();
+
+
+    let today =
+        formatDate(
+            cursor
+        );
+
+
+    /*
+     * Start from today if completed.
+     * Otherwise start from yesterday.
+     */
+
+    if (!set.has(today)) {
+
+        cursor.setUTCDate(
+            cursor.getUTCDate() - 1
+        );
+
+    }
+
+
+    let streak = 0;
+
+
+    while (
+        set.has(
+            formatDate(cursor)
+        )
+    ) {
+
+        streak++;
+
+        cursor.setUTCDate(
+            cursor.getUTCDate() - 1
+        );
+
+    }
+
+
+    return streak;
+
+}
+
+
+function calculateLongestStreak(
+    dates
+) {
+
+    if (!dates.length) {
+        return 0;
+    }
+
+
+    const sorted =
+        [...new Set(dates)]
+            .sort();
+
+
+    let longest = 1;
+    let current = 1;
+
+
+    for (
+        let i = 1;
+        i < sorted.length;
+        i++
+    ) {
+
+        const previous =
+            new Date(
+                sorted[i - 1] +
+                "T00:00:00Z"
+            );
+
+        const currentDate =
+            new Date(
+                sorted[i] +
+                "T00:00:00Z"
+            );
+
+
+        const difference =
+            (
+                currentDate -
+                previous
+            ) /
+            (
+                1000 *
+                60 *
+                60 *
+                24
+            );
+
+
+        if (
+            difference === 1
+        ) {
+
+            current++;
+
+            longest =
+                Math.max(
+                    longest,
+                    current
+                );
+
+        } else {
+
+            current = 1;
+
+        }
+
+    }
+
+
+    return longest;
+
+}
+
+
+
+/* =========================================================
+   ANALYTICS
+========================================================= */
+
+function getAllCompletionDates() {
+
+    const set =
+        new Set();
+
+
+    habits.forEach(
+        habit => {
+
+            getCompletionDates(
+                habit
+            ).forEach(
+                date => set.add(date)
+            );
+
+        }
+    );
+
+
+    return set;
+
+}
+
+
+function calculateWeeklyRate() {
+
+    if (!habits.length) {
+        return 0;
+    }
+
+
+    let completed = 0;
+
+    const today =
+        new Date();
+
+
+    for (
+        let i = 0;
+        i < 7;
+        i++
+    ) {
+
+        const date =
+            new Date(today);
+
+        date.setUTCDate(
+            date.getUTCDate() - i
+        );
+
+
+        const key =
+            formatDate(date);
+
+
+        const dayCompleted =
+            habits.filter(
+                habit =>
+                    getCompletionDates(
+                        habit
+                    ).includes(key)
+            ).length;
+
+
+        completed +=
+            dayCompleted;
+
+    }
+
+
+    const possible =
+        habits.length * 7;
+
+
+    return possible
+        ? Math.round(
+            completed /
+            possible *
+            100
+        )
+        : 0;
+
+}
+
+
+function calculateMonthlyRate() {
+
+    if (!habits.length) {
+        return 0;
+    }
+
+
+    const now =
+        new Date();
+
+    const year =
+        now.getUTCFullYear();
+
+    const month =
+        now.getUTCMonth();
+
+    const daysInMonth =
+        new Date(
+            Date.UTC(
+                year,
+                month + 1,
+                0
+            )
+        ).getUTCDate();
+
+
+    let completed = 0;
+
+
+    habits.forEach(
+        habit => {
+
+            completed +=
+                getCompletionDates(
+                    habit
+                ).filter(
+                    date => {
+
+                        const d =
+                            new Date(
+                                date +
+                                "T00:00:00Z"
+                            );
+
+                        return (
+                            d.getUTCFullYear()
+                                === year &&
+                            d.getUTCMonth()
+                                === month
+                        );
+
+                    }
+                ).length;
+
+        }
+    );
+
+
+    const possible =
+        habits.length *
+        daysInMonth;
+
+
+    return possible
+        ? Math.round(
+            completed /
+            possible *
+            100
+        )
+        : 0;
+
+}
+
+
+function getLast7DaysData() {
+
+    const result = [];
+
+    const today =
+        new Date();
+
+
+    for (
+        let i = 6;
+        i >= 0;
+        i--
+    ) {
+
+        const date =
+            new Date(today);
+
+        date.setUTCDate(
+            date.getUTCDate() - i
+        );
+
+
+        const key =
+            formatDate(date);
+
+
+        const count =
+            habits.filter(
+                habit =>
+                    getCompletionDates(
+                        habit
+                    ).includes(key)
+            ).length;
+
+
+        result.push({
+            date: key,
+            count
+        });
+
+    }
+
+
+    return result;
+
+}
+
+
+
+/* =========================================================
+   DISPLAY HABITS
+========================================================= */
+
+function displayHabits() {
+
+    const container =
+        document.getElementById(
+            "habitsContainer"
+        );
+
+
+    if (!habits.length) {
+
+        container.innerHTML = `
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🌱
+                </div>
+
+                <h2>
+                    No habits yet
+                </h2>
+
+                <p>
+                    Add your first habit above
+                    and start building momentum.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const today =
+        getToday();
+
+
+    container.innerHTML =
+        habits.map(
+            habit => {
+
+                const dates =
+                    getCompletionDates(
+                        habit
+                    );
+
+                const completed =
+                    dates.includes(
+                        today
+                    );
+
+                const current =
+                    calculateCurrentStreak(
+                        dates
+                    );
+
+                const longest =
+                    calculateLongestStreak(
+                        dates
+                    );
+
+
+                return `
+
+                    <div class="habit-card">
+
+                        <div class="habit-top">
+
+                            <div>
+
+                                <div class="habit-name">
+                                    ${escapeHTML(
+                                        habit.name
+                                    )}
+                                </div>
+
+                                <div class="habit-status">
+
+                                    ${
+                                        completed
+                                            ? "Completed today ✓"
+                                            : "Not completed today"
+                                    }
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="habit-actions">
+
+                                <button
+                                    class="habit-action complete"
+                                    onclick="updateHabit(
+                                        '${habit.id}',
+                                        '${completed ? "pending" : "completed"}'
+                                    )"
+                                >
+
+                                    ${
+                                        completed
+                                            ? "↩ Undo"
+                                            : "✓ Complete"
+                                    }
+
+                                </button>
+
+
+                                <button
+                                    class="habit-action delete"
+                                    onclick="deleteHabit(
+                                        '${habit.id}'
+                                    )"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="habit-metrics">
+
+                            <div class="metric">
+
+                                <div class="metric-label">
+                                    Today
+                                </div>
+
+                                <div class="metric-value">
+                                    ${
+                                        completed
+                                            ? "✓"
+                                            : "—"
+                                    }
+                                </div>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <div class="metric-label">
+                                    Streak
+                                </div>
+
+                                <div class="metric-value">
+                                    ${current} 🔥
+                                </div>
+
+                            </div>
+
+
+                            <div class="metric">
+
+                                <div class="metric-label">
+                                    Best
+                                </div>
+
+                                <div class="metric-value">
+                                    ${longest}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+
+/* =========================================================
+   DASHBOARD STATS
+========================================================= */
+
+function updateDashboardStats() {
+
+    const today =
+        getToday();
+
+
+    const total =
+        habits.length;
+
+
+    const completedToday =
+        habits.filter(
+            habit =>
+                getCompletionDates(
+                    habit
+                ).includes(today)
+        ).length;
+
+
+    const totalPossible =
+        total;
+
+
+    const rate =
+        totalPossible
+            ? Math.round(
+                completedToday /
+                totalPossible *
+                100
+            )
+            : 0;
+
+
+    let currentLongest =
+        0;
+
+    let longestOverall =
+        0;
+
+    let totalCompletionDays =
+        0;
+
+
+    habits.forEach(
+        habit => {
+
+            const dates =
+                getCompletionDates(
+                    habit
+                );
+
+
+            totalCompletionDays +=
+                dates.length;
+
+
+            currentLongest =
+                Math.max(
+                    currentLongest,
+                    calculateCurrentStreak(
+                        dates
+                    )
+                );
+
+
+            longestOverall =
+                Math.max(
+                    longestOverall,
+                    calculateLongestStreak(
+                        dates
+                    )
+                );
+
+        }
+    );
+
+
+    document.getElementById(
+        "totalHabits"
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        "completedToday"
+    ).textContent =
+        completedToday;
+
+
+    document.getElementById(
+        "currentStreak"
+    ).textContent =
+        `${currentLongest} 🔥`;
+
+
+    document.getElementById(
+        "completionRate"
+    ).textContent =
+        `${rate}%`;
+
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+        `${rate}%`;
+
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+        `${rate}%`;
+
+
+    document.getElementById(
+        "weeklyRate"
+    ).textContent =
+        `${calculateWeeklyRate()}%`;
+
+
+    document.getElementById(
+        "monthlyRate"
+    ).textContent =
+        `${calculateMonthlyRate()}%`;
+
+
+    document.getElementById(
+        "longestStreak"
+    ).textContent =
+        `${longestOverall} 🔥`;
+
+
+    createChart();
+
+}
+
+
+
+/* =========================================================
+   WEEKLY CHART
+========================================================= */
+
+function createChart() {
+
+    const chart =
+        document.getElementById(
+            "weeklyChart"
+        );
+
+
+    const data =
+        getLast7DaysData();
+
+
+    const max =
+        Math.max(
+            habits.length,
+            1
+        );
+
+
+    chart.innerHTML =
+        data.map(
+            item => {
+
+                const height =
+                    Math.max(
+                        4,
+                        (
+                            item.count /
+                            max
+                        ) *
+                        100
+                    );
+
+
+                const date =
+                    new Date(
+                        item.date +
+                        "T00:00:00Z"
+                    );
+
+
+                const label =
+                    date.toLocaleDateString(
+                        undefined,
+                        {
+                            weekday: "short"
+                        }
+                    ).slice(0, 3);
+
+
+                return `
+
+                    <div class="chart-column">
+
+                        <div class="chart-value">
+                            ${item.count}
+                        </div>
+
+                        <div class="chart-bar-wrap">
+
+                            <div
+                                class="chart-bar"
+                                style="height:${height}%"
+                            ></div>
+
+                        </div>
+
+                        <div class="chart-label">
+                            ${label}
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+
+/* =========================================================
+   CALENDAR
+========================================================= */
+
+function createCalendar() {
+
+    const grid =
+        document.getElementById(
+            "calendarGrid"
+        );
+
+    const monthLabel =
+        document.getElementById(
+            "calendarMonth"
+        );
+
+
+    const year =
+        calendarDate.getFullYear();
+
+    const month =
+        calendarDate.getMonth();
+
+
+    const monthName =
+        calendarDate.toLocaleDateString(
+            undefined,
+            {
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    monthLabel.textContent =
+        monthName;
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        ).getDay();
+
+
+    const daysInMonth =
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
+
+
+    const previousMonthDays =
+        new Date(
+            year,
+            month,
+            0
+        ).getDate();
+
+
+    const allDates =
+        getAllCompletionDates();
+
+
+    let html = "";
+
+
+    for (
+        let i = firstDay - 1;
+        i >= 0;
+        i--
+    ) {
+
+        const day =
+            previousMonthDays - i;
+
+        html += `
+            <div class="calendar-day other">
+                ${day}
+            </div>
+        `;
+
+    }
+
+
+    const today =
+        new Date();
+
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+
+        const date =
+            new Date(
+                year,
+                month,
+                day
+            );
+
+
+        const yyyy =
+            date.getFullYear();
+
+        const mm =
+            String(
+                date.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+        const dd =
+            String(day).padStart(
+                2,
+                "0"
+            );
+
+
+        const key =
+            `${yyyy}-${mm}-${dd}`;
+
+
+        const isCompleted =
+            allDates.has(
+                key
+            );
+
+
+        const isToday =
+            today.getFullYear() ===
+                year &&
+            today.getMonth() ===
+                month &&
+            today.getDate() ===
+                day;
+
+
+        html += `
+
+            <div
+                class="
+                    calendar-day
+                    ${isCompleted ? "completed" : ""}
+                    ${isToday ? "today" : ""}
+                "
+            >
+
+                ${day}
+
+                ${
+                    isCompleted
+                        ? `<div class="calendar-dot"></div>`
+                        : ""
+                }
+
+            </div>
+
+        `;
+
+    }
+
+
+    const totalCells =
+        firstDay +
+        daysInMonth;
+
+
+    const remaining =
+        totalCells % 7 === 0
+            ? 0
+            : 7 -
+              (
+                totalCells % 7
+              );
+
+
+    for (
+        let i = 1;
+        i <= remaining;
+        i++
+    ) {
+
+        html += `
+
+            <div class="calendar-day other">
+                ${i}
+            </div>
+
+        `;
+
+    }
+
+
+    grid.innerHTML =
+        html;
+
+}
+
+
+function changeCalendarMonth(
+    amount
+) {
+
+    calendarDate.setMonth(
+        calendarDate.getMonth() +
+        amount
+    );
+
+    createCalendar();
+
+}
+
+
+
+/* =========================================================
+   KEYBOARD SUPPORT
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        /*
+         * Login Enter
+         */
+
+        if (
+            event.key === "Enter" &&
+            document.getElementById(
+                "loginCard"
+            ) &&
+            !document.getElementById(
+                "loginCard"
+            ).classList.contains(
+                "hidden"
+            )
+        ) {
+
+            const active =
+                document.activeElement;
+
+
+            if (
+                active &&
+                (
+                    active.id ===
+                        "email" ||
+                    active.id ===
+                        "password"
+                )
+            ) {
+
+                login();
+
+            }
+
+        }
+
+
+        /*
+         * Signup Enter
+         */
+
+        if (
+            event.key === "Enter" &&
+            document.getElementById(
+                "signupCard"
+            ) &&
+            !document.getElementById(
+                "signupCard"
+            ).classList.contains(
+                "hidden"
+            )
+        ) {
+
+            const active =
+                document.activeElement;
+
+
+            if (
+                active &&
+                (
+                    active.id ===
+                        "signupEmail" ||
+                    active.id ===
+                        "signupPassword" ||
+                    active.id ===
+                        "signupConfirmPassword"
+                )
+            ) {
+
+                signup();
+
+            }
+
+        }
+
+
+        /*
+         * Verification Enter
+         */
+
+        if (
+            event.key === "Enter" &&
+            document.getElementById(
+                "verificationCard"
+            ) &&
+            !document.getElementById(
+                "verificationCard"
+            ).classList.contains(
+                "hidden"
+            )
+        ) {
+
+            const active =
+                document.activeElement;
+
+
+            if (
+                active &&
+                active.id ===
+                    "verificationCode"
+            ) {
+
+                confirmSignup();
+
+            }
+
+        }
+
+
+        /*
+         * Add habit Enter
+         */
+
+        if (
+            event.key === "Enter" &&
+            document.activeElement &&
+            document.activeElement.id ===
+                "habitName"
+        ) {
+
+            addHabit();
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        const token =
+            getToken();
+
+
+        if (token) {
+
+            showDashboard();
+
+            await loadHabits();
+
+        } else {
+
+            document.getElementById(
+                "loginScreen"
+            ).style.display =
+                "flex";
+
+
+            document.getElementById(
+                "dashboard"
+            ).style.display =
+                "none";
+
+
+            showLogin();
+
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>
