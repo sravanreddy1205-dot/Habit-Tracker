@@ -1,0 +1,57 @@
+# ==========================================
+# Habit Tracker - Git Ignore Configuration
+# ==========================================
+
+# Environment variables and sensitive configuration
+.env
+.env.*
+!.env.example
+secrets/
+credentials/
+*.pem
+*.key
+
+# Node.js dependencies
+node_modules/
+
+# Debug logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Test and coverage output
+coverage/
+.nyc_output/
+
+# Build and deployment output
+dist/
+build/
+out/
+.aws-sam/
+
+# Local development configuration
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+*~
+
+# Local databases and exports
+*.sqlite
+*.sqlite3
+*.db
+
+# ==========================================
+# End of configuration
+# ==========================================
